@@ -12,14 +12,14 @@ generator client {
 }
 
 model UnitApplication {
-  id                String @id @default(uuid())
+  id                String  @id @default(uuid())
   ownerId           String
   ownerType         String
   applicationType   String
   applicationStatus String
   tribeId           String
   applicationData   Json?
-  businessId   String?
+  businessId        String?
   unitApplicationId String
 
   updatedAt               DateTime                  @updatedAt
@@ -64,28 +64,185 @@ model UnitCustomerAccount {
   createdAt DateTime @default(now())
 }
 
-model UnitCounterparties {
-  id                  String @id @default(uuid())
-  ownerId             String
-  ownerType           String
-  customerId          String
-  unitCounterpartyId  String @unique
-  bank                String
-  name                String
-  accountType         String
+model UnitCounterpartie {
+  id                 String @id @default(uuid())
+  ownerId            String
+  ownerType          String
+  customerId         String
+  unitCounterpartyId String @unique
+  bank               String
+  name               String
+  accountType        String
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
 
-model UnitTransactions {
-  transactionId       String @id @default(uuid())
-  accountId           String
-  counterpartyId      String
-  amount              String
-  description         String
-  accountType         String
+model UnitTransaction {
+  transactionId  String @id @default(uuid())
+  accountId      String
+  counterpartyId String
+  amount         String
+  description    String
+  accountType    String
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+model AchAuthorizationLog {
+  id                         String                   @id @default(uuid())
+  amount                     Int
+  transactionDate            DateTime
+  accountMask                String
+  tribeId                    String
+  tribe                      Tribe                    @relation(fields: [tribeId], references: [id])
+  userId                     String
+  user                       User                     @relation(fields: [userId], references: [id])
+  memberId                   String
+  member                     Member                   @relation(fields: [memberId], references: [id])
+  fundingRoundId             String
+  fundingRound               FundingRound             @relation(fields: [fundingRoundId], references: [id])
+  fundingRoundSubscriptionId String
+  fundingRoundSubscription   FundingRoundSubscription @relation(fields: [fundingRoundSubscriptionId], references: [id])
+  updatedAt                  DateTime                 @updatedAt
+  createdAt                  DateTime                 @default(now())
+}
+
+model User {
+  id                  String                @id @default(uuid())
+  firstName           String
+  lastName            String
+  email               String
+  streetAddress1      String
+  streetAddress2      String
+  phone               String
+  photoId             String
+  personaResponseId   String
+  picture             String
+  gender              String
+  state               String
+  city                String
+  zipcode             String
+  paymentsCustomerId  String
+  dateOfBirth         DateTime
+  firstLogin          DateTime
+  members             Member[]
+  updatedAt           DateTime              @updatedAt
+  createdAt           DateTime              @default(now())
+  AchAuthorizationLog AchAuthorizationLog[]
+}
+
+model Member {
+  id                        String                     @id @default(uuid())
+  tribeId                   String
+  tribe                     Tribe                      @relation(fields: [tribeId], references: [id])
+  inviteId                  String
+  roles                     String[]
+  userId                    String
+  user                      User                       @relation(fields: [userId], references: [id])
+  status                    String
+  totals                    Json                       @db.JsonB
+  fundingRoundSubscriptions FundingRoundSubscription[]
+  memberTransactions        MemberTransaction[]
+  updatedAt                 DateTime                   @updatedAt
+  createdAt                 DateTime                   @default(now())
+  AchAuthorizationLog       AchAuthorizationLog[]
+  Tribe                     Tribe[]                    @relation("founder")
+}
+
+model Tribe {
+  id                       String                     @id @default(uuid())
+  name                     String
+  description              String                     @db.Text
+  votingThreshold          Json                       @db.JsonB
+  icon                     String
+  mode                     String
+  tribecaseResponseId      String
+  status                   String
+  noOfMembers              Int
+  launched                 DateTime
+  uniqueCode               String
+  memberId                 String
+  updatedBy                String
+  paymentsCustomerId       String
+  businesses               String[]
+  equityDistribution       Json                       @db.JsonB
+  totals                   Json                       @db.JsonB
+  founder                  Member                     @relation("founder", fields: [memberId], references: [id])
+  members                  Member[]
+  fundingRounds            FundingRound[]
+  memberTransactions       MemberTransaction[]
+  updatedAt                DateTime                   @updatedAt
+  createdAt                DateTime                   @default(now())
+  AchAuthorizationLog      AchAuthorizationLog[]
+  FundingRoundSubscription FundingRoundSubscription[]
+}
+
+model FundingRound {
+  id                        String                     @id @default(uuid())
+  pauseMonths               Int                        @default(0)
+  status                    String
+  contributionAmount        Int
+  createdBy                 String
+  deadline                  DateTime
+  startDate                 DateTime
+  contributionGoalAmount    Int
+  title                     String
+  totalToDate               Int                        @default(0)
+  type                      String
+  fundingRoundSubscriptions FundingRoundSubscription[]
+  tribeId                   String
+  tribe                     Tribe                      @relation(fields: [tribeId], references: [id])
+  memberTransactions        MemberTransaction[]
+  updatedAt                 DateTime                   @updatedAt
+  createdAt                 DateTime                   @default(now())
+  AchAuthorizationLog       AchAuthorizationLog[]
+}
+
+model FundingRoundSubscription {
+  id                     String                @id @default(uuid())
+  requiredContributions  Int                   @default(1)
+  recurrenceStructure    String                @default("date")
+  status                 String
+  contributionAmount     Int
+  lastContributionDate   DateTime
+  startDate              DateTime
+  totalSubscriptionValue Int                   @default(0)
+  nextContributionDate   DateTime
+  fundingRoundId         String
+  fundingRound           FundingRound          @relation(fields: [fundingRoundId], references: [id])
+  tribeId                String
+  tribe                  Tribe                 @relation(fields: [tribeId], references: [id])
+  memberId               String
+  member                 Member                @relation(fields: [memberId], references: [id])
+  memberTransactions     MemberTransaction[]
+  updatedAt              DateTime              @updatedAt
+  createdAt              DateTime              @default(now())
+  AchAuthorizationLog    AchAuthorizationLog[]
+}
+
+model MemberTransaction {
+  id                         String                   @id @default(uuid())
+  purpose                    String
+  creditOrDebit              String
+  status                     String
+  fromAccount                Int
+  toAccount                  String
+  reference                  String
+  batchId                    String
+  processedDate              DateTime
+  recipientName              String
+  amount                     Int
+  description                String                   @db.Text
+  memberId                   String
+  member                     Member                   @relation(fields: [memberId], references: [id])
+  tribeId                    String
+  tribe                      Tribe                    @relation(fields: [tribeId], references: [id])
+  fundingRoundId             String
+  fundingRound               FundingRound             @relation(fields: [fundingRoundId], references: [id])
+  fundingRoundSubscriptionId String
+  fundingRoundSubscription   FundingRoundSubscription @relation(fields: [fundingRoundSubscriptionId], references: [id])
+  updatedAt                  DateTime                 @updatedAt
+  createdAt                  DateTime                 @default(now())
 }
