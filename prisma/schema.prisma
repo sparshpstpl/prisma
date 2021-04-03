@@ -20,11 +20,12 @@ model UnitApplication {
   tribeId           String
   applicationData   Json?
   businessId        String?
-  unitApplicationId String
+  unitApplicationId String  @unique
 
   updatedAt               DateTime                  @updatedAt
   createdAt               DateTime                  @default(now())
   UnitApplicationDocument UnitApplicationDocument[]
+  UnitRelationship        UnitRelationship[]
 }
 
 model UnitCustomer {
@@ -32,10 +33,11 @@ model UnitCustomer {
   ownerId           String
   ownerType         String
   unitCustomerId    String @unique
-  unitApplicationId String
+  unitApplicationId String @unique
 
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  updatedAt        DateTime           @updatedAt
+  createdAt        DateTime           @default(now())
+  UnitRelationship UnitRelationship[]
 }
 
 model UnitApplicationDocument {
@@ -60,8 +62,9 @@ model UnitCustomerAccount {
   accountType   String
   accountStatus String
 
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  updatedAt        DateTime           @updatedAt
+  createdAt        DateTime           @default(now())
+  UnitRelationship UnitRelationship[]
 }
 
 model UnitCounterpartie {
@@ -73,6 +76,22 @@ model UnitCounterpartie {
   bank               String
   name               String
   accountType        String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  UnitRelationship UnitRelationship[]
+}
+
+model UnitRelationship {
+  id                 String              @id @default(uuid())
+  unitApplicationId  String
+  application        UnitApplication     @relation(fields: [unitApplicationId], references: [unitApplicationId])
+  unitCustomerId     String
+  customer           UnitCustomer        @relation(fields: [unitCustomerId], references: [unitCustomerId])
+  unitAccountId      String
+  account            UnitCustomerAccount @relation(fields: [unitAccountId], references: [accountId])
+  unitCounterpartyId String
+  counterparty    UnitCounterpartie @relation(fields: [unitCounterpartyId], references: [unitCounterpartyId])
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
