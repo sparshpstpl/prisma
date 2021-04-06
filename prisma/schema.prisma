@@ -61,6 +61,7 @@ model UnitCustomerAccount {
   accountId     String @unique
   accountType   String
   accountStatus String
+  unitApplicationId  String
 
   updatedAt        DateTime           @updatedAt
   createdAt        DateTime           @default(now())
@@ -79,7 +80,6 @@ model UnitCounterpartie {
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
-  UnitRelationship UnitRelationship[]
 }
 
 model UnitRelationship {
@@ -90,8 +90,6 @@ model UnitRelationship {
   customer           UnitCustomer        @relation(fields: [unitCustomerId], references: [unitCustomerId])
   unitAccountId      String
   account            UnitCustomerAccount @relation(fields: [unitAccountId], references: [accountId])
-  unitCounterpartyId String
-  counterparty    UnitCounterpartie @relation(fields: [unitCounterpartyId], references: [unitCounterpartyId])
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
