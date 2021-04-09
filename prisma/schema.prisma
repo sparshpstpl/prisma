@@ -161,7 +161,6 @@ model Member {
   status                    String
   totals                    Json                       @db.JsonB
   fundingRoundSubscriptions FundingRoundSubscription[]
-  memberTransactions        MemberTransaction[]
   updatedAt                 DateTime                   @updatedAt
   createdAt                 DateTime                   @default(now())
   AchAuthorizationLog       AchAuthorizationLog[]
@@ -189,7 +188,6 @@ model Tribe {
   founder                  Member                     @relation("founder", fields: [memberId], references: [id])
   members                  Member[]
   fundingRounds            FundingRound[]
-  memberTransactions       MemberTransaction[]
   updatedAt                DateTime                   @updatedAt
   createdAt                DateTime                   @default(now())
   AchAuthorizationLog      AchAuthorizationLog[]
@@ -211,7 +209,6 @@ model FundingRound {
   fundingRoundSubscriptions FundingRoundSubscription[]
   tribeId                   String
   tribe                     Tribe                      @relation(fields: [tribeId], references: [id])
-  memberTransactions        MemberTransaction[]
   updatedAt                 DateTime                   @updatedAt
   createdAt                 DateTime                   @default(now())
   AchAuthorizationLog       AchAuthorizationLog[]
@@ -233,7 +230,6 @@ model FundingRoundSubscription {
   tribe                  Tribe                 @relation(fields: [tribeId], references: [id])
   memberId               String
   member                 Member                @relation(fields: [memberId], references: [id])
-  memberTransactions     MemberTransaction[]
   updatedAt              DateTime              @updatedAt
   createdAt              DateTime              @default(now())
   AchAuthorizationLog    AchAuthorizationLog[]
@@ -244,22 +240,16 @@ model MemberTransaction {
   purpose                    String
   creditOrDebit              String
   status                     String
-  fromAccount                Int
   toAccount                  String
-  reference                  String
-  batchId                    String
-  processedDate              DateTime
+  processedDate              DateTime?
   recipientName              String
   amount                     Int
   description                String                   @db.Text
   memberId                   String
-  member                     Member                   @relation(fields: [memberId], references: [id])
   tribeId                    String
-  tribe                      Tribe                    @relation(fields: [tribeId], references: [id])
   fundingRoundId             String
-  fundingRound               FundingRound             @relation(fields: [fundingRoundId], references: [id])
   fundingRoundSubscriptionId String
-  fundingRoundSubscription   FundingRoundSubscription @relation(fields: [fundingRoundSubscriptionId], references: [id])
+  reference                  String?
   updatedAt                  DateTime                 @updatedAt
   createdAt                  DateTime                 @default(now())
 }
