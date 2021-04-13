@@ -237,6 +237,7 @@ model FundingRoundSubscription {
 
 model MemberTransaction {
   id                         String                   @id @default(uuid())
+  transactionId              String
   purpose                    String
   creditOrDebit              String
   status                     String
