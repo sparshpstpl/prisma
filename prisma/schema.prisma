@@ -14,6 +14,7 @@ generator client {
 model UnitApplication {
   id                String  @id @default(uuid())
   ownerId           String
+  userId            String
   ownerType         String
   applicationType   String
   applicationStatus String
