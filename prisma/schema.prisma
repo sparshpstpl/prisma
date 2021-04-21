@@ -53,25 +53,25 @@ model UnitApplicationDocument {
   createdAt DateTime @default(now())
 }
 
-model UnitCustomerAccount {
-  id            String @id @default(uuid())
-  ownerId       String
-  ownerType     String
-  accountId     String @unique
-  accountType   String
-  accountStatus String
-  unitApplicationId  String
+model UnitAccount {
+  id              String @id @default(uuid())
+  ownerId         String
+  ownerType       String
+  accountId       String @unique
+  accountType     String
+  accountStatus   String
+  unitCustomerId  String
 
   updatedAt        DateTime           @updatedAt
   createdAt        DateTime           @default(now())
   UnitRelationship UnitRelationship[]
 }
 
-model UnitCounterpartie {
+model UnitCounterparty {
   id                 String @id @default(uuid())
   ownerId            String
   ownerType          String
-  customerId         String
+  unitCustomerId     String
   unitCounterpartyId String @unique
   bank               String
   name               String
