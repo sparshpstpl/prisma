@@ -57,7 +57,7 @@ model UnitAccount {
   id              String @id @default(uuid())
   ownerId         String
   ownerType       String
-  accountId       String @unique
+  unitAccountId   String @unique
   accountType     String
   accountStatus   String
   unitCustomerId  String
@@ -88,7 +88,7 @@ model UnitRelationship {
   unitCustomerId     String
   customer           UnitCustomer        @relation(fields: [unitCustomerId], references: [unitCustomerId])
   unitAccountId      String
-  account            UnitAccount @relation(fields: [unitAccountId], references: [accountId])
+  account            UnitAccount @relation(fields: [unitAccountId], references: [unitAccountId])
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
