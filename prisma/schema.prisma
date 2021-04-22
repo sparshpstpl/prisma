@@ -53,25 +53,25 @@ model UnitApplicationDocument {
   createdAt DateTime @default(now())
 }
 
-model UnitCustomerAccount {
-  id            String @id @default(uuid())
-  ownerId       String
-  ownerType     String
-  accountId     String @unique
-  accountType   String
-  accountStatus String
-  unitApplicationId  String
+model UnitAccount {
+  id              String @id @default(uuid())
+  ownerId         String
+  ownerType       String
+  accountId       String @unique
+  accountType     String
+  accountStatus   String
+  unitCustomerId  String
 
   updatedAt        DateTime           @updatedAt
   createdAt        DateTime           @default(now())
   UnitRelationship UnitRelationship[]
 }
 
-model UnitCounterpartie {
+model UnitCounterparty {
   id                 String @id @default(uuid())
   ownerId            String
   ownerType          String
-  customerId         String
+  unitCustomerId     String
   unitCounterpartyId String @unique
   bank               String
   name               String
@@ -88,7 +88,7 @@ model UnitRelationship {
   unitCustomerId     String
   customer           UnitCustomer        @relation(fields: [unitCustomerId], references: [unitCustomerId])
   unitAccountId      String
-  account            UnitCustomerAccount @relation(fields: [unitAccountId], references: [accountId])
+  account            UnitAccount @relation(fields: [unitAccountId], references: [accountId])
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -104,152 +104,4 @@ model UnitTransaction {
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
-}
-
-model AchAuthorizationLog {
-  id                         String                   @id @default(uuid())
-  amount                     Int
-  transactionDate            DateTime
-  accountMask                String
-  tribeId                    String
-  tribe                      Tribe                    @relation(fields: [tribeId], references: [id])
-  userId                     String
-  user                       User                     @relation(fields: [userId], references: [id])
-  memberId                   String
-  member                     Member                   @relation(fields: [memberId], references: [id])
-  fundingRoundId             String
-  fundingRound               FundingRound             @relation(fields: [fundingRoundId], references: [id])
-  fundingRoundSubscriptionId String
-  fundingRoundSubscription   FundingRoundSubscription @relation(fields: [fundingRoundSubscriptionId], references: [id])
-  updatedAt                  DateTime                 @updatedAt
-  createdAt                  DateTime                 @default(now())
-}
-
-model User {
-  id                  String                @id @default(uuid())
-  firstName           String
-  lastName            String
-  email               String
-  streetAddress1      String
-  streetAddress2      String
-  phone               String
-  photoId             String
-  personaResponseId   String
-  picture             String
-  gender              String
-  state               String
-  city                String
-  zipcode             String
-  paymentsCustomerId  String
-  dateOfBirth         DateTime
-  firstLogin          DateTime
-  members             Member[]
-  updatedAt           DateTime              @updatedAt
-  createdAt           DateTime              @default(now())
-  AchAuthorizationLog AchAuthorizationLog[]
-}
-
-model Member {
-  id                        String                     @id @default(uuid())
-  tribeId                   String
-  tribe                     Tribe                      @relation(fields: [tribeId], references: [id])
-  inviteId                  String
-  roles                     String[]
-  userId                    String
-  user                      User                       @relation(fields: [userId], references: [id])
-  status                    String
-  totals                    Json                       @db.JsonB
-  fundingRoundSubscriptions FundingRoundSubscription[]
-  updatedAt                 DateTime                   @updatedAt
-  createdAt                 DateTime                   @default(now())
-  AchAuthorizationLog       AchAuthorizationLog[]
-  Tribe                     Tribe[]                    @relation("founder")
-}
-
-model Tribe {
-  id                       String                     @id @default(uuid())
-  name                     String
-  description              String                     @db.Text
-  votingThreshold          Json                       @db.JsonB
-  icon                     String
-  mode                     String
-  tribecaseResponseId      String
-  status                   String
-  noOfMembers              Int
-  launched                 DateTime
-  uniqueCode               String
-  memberId                 String
-  updatedBy                String
-  paymentsCustomerId       String
-  businesses               String[]
-  equityDistribution       Json                       @db.JsonB
-  totals                   Json                       @db.JsonB
-  founder                  Member                     @relation("founder", fields: [memberId], references: [id])
-  members                  Member[]
-  fundingRounds            FundingRound[]
-  updatedAt                DateTime                   @updatedAt
-  createdAt                DateTime                   @default(now())
-  AchAuthorizationLog      AchAuthorizationLog[]
-  FundingRoundSubscription FundingRoundSubscription[]
-}
-
-model FundingRound {
-  id                        String                     @id @default(uuid())
-  pauseMonths               Int                        @default(0)
-  status                    String
-  contributionAmount        Int
-  createdBy                 String
-  deadline                  DateTime
-  startDate                 DateTime
-  contributionGoalAmount    Int
-  title                     String
-  totalToDate               Int                        @default(0)
-  type                      String
-  fundingRoundSubscriptions FundingRoundSubscription[]
-  tribeId                   String
-  tribe                     Tribe                      @relation(fields: [tribeId], references: [id])
-  updatedAt                 DateTime                   @updatedAt
-  createdAt                 DateTime                   @default(now())
-  AchAuthorizationLog       AchAuthorizationLog[]
-}
-
-model FundingRoundSubscription {
-  id                     String                @id @default(uuid())
-  requiredContributions  Int                   @default(1)
-  recurrenceStructure    String                @default("date")
-  status                 String
-  contributionAmount     Int
-  lastContributionDate   DateTime
-  startDate              DateTime
-  totalSubscriptionValue Int                   @default(0)
-  nextContributionDate   DateTime
-  fundingRoundId         String
-  fundingRound           FundingRound          @relation(fields: [fundingRoundId], references: [id])
-  tribeId                String
-  tribe                  Tribe                 @relation(fields: [tribeId], references: [id])
-  memberId               String
-  member                 Member                @relation(fields: [memberId], references: [id])
-  updatedAt              DateTime              @updatedAt
-  createdAt              DateTime              @default(now())
-  AchAuthorizationLog    AchAuthorizationLog[]
-}
-
-model MemberTransaction {
-  id                         String                   @id @default(uuid())
-  transactionId              String
-  purpose                    String
-  creditOrDebit              String
-  status                     String
-  toAccount                  String
-  processedDate              DateTime?
-  recipientName              String
-  amount                     Int
-  description                String                   @db.Text
-  memberId                   String
-  tribeId                    String
-  fundingRoundId             String
-  fundingRoundSubscriptionId String
-  reference                  String?
-  updatedAt                  DateTime                 @updatedAt
-  createdAt                  DateTime                 @default(now())
 }
